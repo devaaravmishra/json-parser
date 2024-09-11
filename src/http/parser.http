@@ -1,0 +1,81 @@
+# baseURL = http://localhost:3000
+
+###
+# Parse JSON and return JSON format (default)
+POST {{baseURL}}/parse
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="json"
+
+{
+    "name": "John Doe",
+    "age": 30,
+    "city": "New York"
+}
+--boundary--
+
+### 
+# Response for JSON format
+{
+    "name": "John Doe",
+    "age": 30,
+    "city": "New York"
+}
+
+###
+# Parse JSON and return AST format
+POST {{baseURL}}/parse?format=ast
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="json"
+
+{
+    "name": "John Doe",
+    "age": 30,
+    "city": "New York"
+}
+--boundary--
+
+###
+# Response for AST format
+{
+    "type": "Object",
+    "value": {
+        "name": {
+            "type": "String",
+            "value": "John Doe"
+        },
+        "age": {
+            "type": "Number",
+            "value": 30
+        },
+        "city": {
+            "type": "String",
+            "value": "New York"
+        }
+    }
+}
+
+###
+# Invalid format query
+POST {{baseURL}}/parse?format=xml
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="json"
+
+{
+    "name": "John Doe",
+    "age": 30,
+    "city": "New York"
+}
+--boundary--
+
+###
+# Response for invalid format
+HTTP/1.1 400 Bad Request
+{
+    "message": "Invalid format query parameter (must be json or ast)"
+}

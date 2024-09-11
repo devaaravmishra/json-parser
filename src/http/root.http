@@ -1,0 +1,9 @@
+# baseURL = http://localhost:3000
+
+###
+# Hello world
+GET {{ baseURL }}/
+
+###
+# Health check
+GET {{ baseURL }}/health
