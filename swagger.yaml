@@ -1,123 +1,132 @@
+openapi: 3.0.0
+info:
+  title: JSON Parser API
+  description: API to parse JSON input and return it in JSON or AST format.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local development server
 tags:
-- name: users
-  description: users API
+  - name: Root
+    description: Basic root endpoints for the application
+  - name: JSON
+    description: Endpoints to parse and return JSON or AST format
 
 paths:
-# [GET] users
-  /users:
+  /:
     get:
       tags:
-      - users
-      summary: Find All Users
+        - Root
+      summary: Root endpoint
+      description: Returns a greeting message
+      operationId: getRoot
       responses:
-        200:
-          description: 'OK'
-        500:
-          description: 'Server Error'
+        '200':
+          description: A greeting message
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'Hello World'
+        '500':
+          description: Internal Server Error
 
-# [POST] users
+  /health:
+    get:
+      tags:
+        - Root
+      summary: Health check
+      description: Returns a simple 'OK' to indicate the server is running
+      operationId: getHealth
+      responses:
+        '200':
+          description: Health check successful
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'OK'
+        '500':
+          description: Internal Server Error
+
+  /parse:
     post:
       tags:
-      - users
-      summary: Add User
+        - JSON
+      summary: Parse JSON input and return in specified format
+      description: Parse the provided JSON input and return either in JSON format or AST format based on the query parameter.
+      operationId: postParse
       parameters:
-      - name: body
-        in: body
-        description: user Data
+        - name: format
+          in: query
+          description: The format in which to return the parsed data
+          required: false
+          schema:
+            type: string
+            enum: [json, ast]
+            default: json
+      requestBody:
         required: true
-        schema:
-          $ref: '#/definitions/users'
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                json:
+                  type: string
+                  description: The JSON input to parse
+                  example: |
+                    {
+                      "name": "John Doe",
+                      "age": 30,
+                      "city": "New York"
+                    }
+              required:
+                - json
       responses:
-        201:
-          description: 'Created'
-        400:
-          description: 'Bad Request'
-        409:
-          description: 'Conflict'
-        500:
-          description: 'Server Error'
-
-# [GET] users/id
-  /users/{id}:
-    get:
-      tags:
-      - users
-      summary: Find User By Id
-      parameters:
-      - name: id
-        in: path
-        description: User Id
-        required: true
-        type: integer
-      responses:
-        200:
-          description: 'OK'
-        409:
-          description: 'Conflict'
-        500:
-          description: 'Server Error'
-
-# [PUT] users/id
-    put:
-      tags:
-      - users
-      summary: Update User By Id
-      parameters:
-      - name: id
-        in: path
-        description: user Id
-        required: true
-        type: integer
-      - name: body
-        in: body
-        description: user Data
-        required: true
-        schema:
-          $ref: '#/definitions/users'
-      responses:
-        200:
-          description: 'OK'
-        400:
-          description: 'Bad Request'
-        409:
-          description: 'Conflict'
-        500:
-          description: 'Server Error'
-
-# [DELETE] users/id
-    delete:
-      tags:
-      - users
-      summary: Delete User By Id
-      parameters:
-      - name: id
-        in: path
-        description: user Id
-        required: true
-        type: integer
-      responses:
-        200:
-          description: 'OK'
-        409:
-          description: 'Conflict'
-        500:
-          description: 'Server Error'
-
-# definitions
-definitions:
-  users:
-    type: object
-    required:
-        - email
-        - password
-    properties:
-      email:
-        type: string
-        description: user Email
-      password:
-        type: string
-        description: user Password
-
-schemes:
- - https
- - http
+        '200':
+          description: Successfully parsed the JSON input
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Parsed JSON format
+                    example: |
+                      {
+                        "name": "John Doe",
+                        "age": 30,
+                        "city": "New York"
+                      }
+                  - type: object
+                    description: Parsed AST format
+                    example: |
+                      {
+                        "type": "Object",
+                        "value": {
+                          "name": {
+                            "type": "String",
+                            "value": "John Doe"
+                          },
+                          "age": {
+                            "type": "Number",
+                            "value": 30
+                          },
+                          "city": {
+                            "type": "String",
+                            "value": "New York"
+                          }
+                        }
+                      }
+        '400':
+          description: Invalid format query parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid format query parameter (must be json or ast)'
+        '500':
+          description: Internal Server Error
