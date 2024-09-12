@@ -1,6 +1,8 @@
 # json-parser
 
-A json parser built using Node.js &amp; TypeScript.
+![License](https://img.shields.io/github/license/devaaravmishra/json-parser)
+![Version](https://img.shields.io/github/package-json/v/devaaravmishra/json-parser)
+![Issues](https://img.shields.io/github/issues/devaaravmishra/json-parser)
 
 Welcome to the **json-parser** repository! This project provides a versatile JSON parser capable of handling and returning data in either JSON or Abstract Syntax Tree (AST) formats. Mainly crafted for learning purposes, the project offers a comprehensive overview of JSON parsing and data processing, making it an excellent resource for developers looking to understand JSON parsing in-depth.
 
